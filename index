@@ -1,0 +1,2324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>574 Lab — Plateforme Immersive</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   CSS VARIABLES & RESET
+   ============================================ */
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a28;
+  --bg-card-hover: #222236;
+  --accent-red: #e50914;
+  --accent-red-light: #ff2d3a;
+  --accent-574: #00c8ff;
+  --accent-574-dim: rgba(0,200,255,0.15);
+  --accent-gold: #f5a623;
+  --text-primary: #f1f1f1;
+  --text-secondary: #a0a0b0;
+  --text-muted: #666680;
+  --gradient-hero: linear-gradient(180deg, transparent 0%, rgba(10,10,15,0.6) 50%, var(--bg-primary) 100%);
+  --gradient-left: linear-gradient(90deg, var(--bg-primary) 0%, transparent 100%);
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --shadow-glow: 0 0 40px rgba(0,200,255,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+  height: 68px;
+  transition: background var(--transition);
+}
+.navbar.scrolled {
+  background: rgba(10,10,15,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  background: var(--accent-574);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--bg-primary);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.brand-text {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--text-primary);
+  letter-spacing: 2px;
+}
+.nav-links {
+  display: flex;
+  gap: 32px;
+  margin-left: 48px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color var(--transition);
+  position: relative;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--text-primary);
+}
+.nav-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--accent-574);
+  border-radius: 1px;
+}
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.nav-search {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  font-size: 16px;
+}
+.nav-search:hover {
+  border-color: var(--accent-574);
+  color: var(--accent-574);
+}
+.nav-notif {
+  position: relative;
+}
+.nav-notif::after {
+  content: '3';
+  position: absolute;
+  top: -2px; right: -2px;
+  width: 16px; height: 16px;
+  background: var(--accent-red);
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+}
+.nav-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--accent-574), #0066ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--transition);
+}
+.nav-avatar:hover { transform: scale(1.08); }
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.hero {
+  position: relative;
+  height: 90vh;
+  min-height: 600px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 48px 80px;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 70% 30%, rgba(0,200,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 30% 60%, rgba(229,9,20,0.05) 0%, transparent 50%),
+    linear-gradient(135deg, #0d1117 0%, #151525 30%, #0e1a2b 60%, #0a0a0f 100%);
+}
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at 60% 40%, black 20%, transparent 70%);
+  animation: gridPulse 8s ease-in-out infinite;
+}
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.hero-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--accent-574);
+  border-radius: 50%;
+  opacity: 0;
+  animation: floatParticle 12s linear infinite;
+}
+.particle:nth-child(1) { left: 20%; animation-delay: 0s; animation-duration: 10s; }
+.particle:nth-child(2) { left: 40%; animation-delay: 2s; animation-duration: 14s; }
+.particle:nth-child(3) { left: 60%; animation-delay: 4s; animation-duration: 11s; }
+.particle:nth-child(4) { left: 80%; animation-delay: 1s; animation-duration: 13s; }
+.particle:nth-child(5) { left: 10%; animation-delay: 3s; animation-duration: 15s; }
+.particle:nth-child(6) { left: 50%; animation-delay: 5s; animation-duration: 9s; }
+.particle:nth-child(7) { left: 70%; animation-delay: 6s; animation-duration: 12s; }
+.particle:nth-child(8) { left: 30%; animation-delay: 7s; animation-duration: 11s; }
+@keyframes floatParticle {
+  0% { transform: translateY(100vh); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-10vh); opacity: 0; }
+}
+.hero-gradient {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 50%;
+  background: var(--gradient-hero);
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,200,255,0.1);
+  border: 1px solid rgba(0,200,255,0.25);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12px;
+  color: var(--accent-574);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  animation: fadeInUp 0.8s ease-out;
+}
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  background: var(--accent-574);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 6vw, 80px);
+  line-height: 0.95;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  animation: fadeInUp 0.8s ease-out 0.1s both;
+}
+.hero h1 .highlight {
+  background: linear-gradient(90deg, var(--accent-574), #60dfff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  max-width: 520px;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--accent-574);
+  color: var(--bg-primary);
+}
+.btn-primary:hover {
+  background: #33d4ff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,200,255,0.3);
+}
+.btn-secondary {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.14);
+  transform: translateY(-2px);
+}
+.btn-icon {
+  font-size: 18px;
+}
+.hero-stats {
+  position: absolute;
+  right: 48px;
+  bottom: 80px;
+  display: flex;
+  gap: 40px;
+  z-index: 2;
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat-number {
+  font-family: var(--font-display);
+  font-size: 42px;
+  color: var(--accent-574);
+  letter-spacing: 1px;
+}
+.hero-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   SECTION TITLES
+   ============================================ */
+.section-row {
+  padding: 0 48px;
+  margin-bottom: 48px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-title .bar {
+  width: 4px;
+  height: 24px;
+  background: var(--accent-574);
+  border-radius: 2px;
+}
+.section-see-all {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color var(--transition);
+}
+.section-see-all:hover { color: var(--accent-574); }
+
+/* ============================================
+   HORIZONTAL SCROLL ROW
+   ============================================ */
+.scroll-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  scroll-snap-type: x mandatory;
+}
+.scroll-row::-webkit-scrollbar { height: 4px; }
+.scroll-row::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+/* ============================================
+   FORMAT CARDS (Event types)
+   ============================================ */
+.format-card {
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.format-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(0,200,255,0.2);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), var(--shadow-glow);
+}
+.format-card-visual {
+  height: 155px;
+  position: relative;
+  overflow: hidden;
+}
+.format-card-visual .fc-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+.format-card-visual .fc-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgba(26,26,40,0.95) 100%);
+}
+.format-card-body {
+  padding: 14px 16px 18px;
+}
+.format-card-tag {
+  display: inline-block;
+  background: var(--accent-574-dim);
+  color: var(--accent-574);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.format-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.format-card p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.format-card-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.format-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ============================================
+   SPACE CARDS (3D spaces)
+   ============================================ */
+.space-card {
+  flex: 0 0 320px;
+  scroll-snap-align: start;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.space-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(0,200,255,0.2);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), var(--shadow-glow);
+}
+.space-card-img {
+  height: 200px;
+  position: relative;
+}
+.space-card-img .sc-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52px;
+}
+.space-card-img .sc-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(10,10,15,0.95) 100%);
+}
+.space-card-avail {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.space-card-avail.available { color: #4ade80; }
+.space-card-avail.limited { color: var(--accent-gold); }
+.space-card-avail .dot-status {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.space-card-body {
+  padding: 16px 18px 20px;
+  background: var(--bg-card);
+}
+.space-card h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.space-card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.space-card-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.space-card-features .feat {
+  background: rgba(255,255,255,0.06);
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   PEOPLE CARDS (Facilitators, experts)
+   ============================================ */
+.people-card {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  padding: 20px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.people-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0,200,255,0.2);
+  box-shadow: var(--shadow-glow);
+}
+.people-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  position: relative;
+}
+.people-avatar::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color var(--transition);
+}
+.people-card:hover .people-avatar::after {
+  border-color: var(--accent-574);
+}
+.people-card h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.people-card .role {
+  font-size: 11px;
+  color: var(--accent-574);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.people-card .expertise {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.people-rating {
+  color: var(--accent-gold);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+/* ============================================
+   DEMO CARDS (Tech demos)
+   ============================================ */
+.demo-card {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition);
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+}
+.demo-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(229,9,20,0.3);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(229,9,20,0.08);
+}
+.demo-card-visual {
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+}
+.demo-card-visual .dc-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+.demo-card-visual .dc-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgba(26,26,40,0.95) 100%);
+}
+.demo-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  background: rgba(229,9,20,0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all var(--transition);
+  font-size: 18px;
+}
+.demo-card:hover .demo-play-btn {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+.demo-card-body {
+  padding: 14px 16px 18px;
+}
+.demo-card-tag {
+  display: inline-block;
+  background: rgba(229,9,20,0.15);
+  color: var(--accent-red-light);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.demo-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.demo-card p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.demo-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.demo-duration {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ============================================
+   QUICK BUILDER CTA
+   ============================================ */
+.quick-builder {
+  margin: 60px 48px;
+  padding: 48px;
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0e1a2b 0%, #151530 50%, #1a0e2b 100%);
+  border: 1px solid rgba(0,200,255,0.1);
+}
+.quick-builder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0,200,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.quick-builder-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+.quick-builder h2 {
+  font-family: var(--font-display);
+  font-size: 36px;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.quick-builder p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 500px;
+}
+.quick-builder-steps {
+  display: flex;
+  gap: 20px;
+}
+.qb-step {
+  width: 120px;
+  padding: 20px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition: all var(--transition);
+}
+.qb-step:hover {
+  background: rgba(0,200,255,0.06);
+  border-color: rgba(0,200,255,0.15);
+  transform: translateY(-4px);
+}
+.qb-step-num {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 10px;
+  background: var(--accent-574-dim);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-574);
+}
+.qb-step-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.qb-step-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px;
+  overflow-y: auto;
+}
+.modal-overlay.active {
+  display: flex;
+}
+.modal {
+  width: 100%;
+  max-width: 820px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: modalIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.92) translateY(30px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-hero {
+  height: 260px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  overflow: hidden;
+}
+.modal-hero .mh-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, var(--bg-secondary) 100%);
+}
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all var(--transition);
+}
+.modal-close:hover {
+  background: rgba(229,9,20,0.6);
+  transform: rotate(90deg);
+}
+.modal-body {
+  padding: 0 32px 32px;
+  position: relative;
+  margin-top: -40px;
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+.modal-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.modal-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.modal-tag {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.modal-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.modal-info-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+}
+.modal-info-box .label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.modal-info-box .value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-574);
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+}
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ============================================
+   WIZARD MODAL (Booking flow)
+   ============================================ */
+.wizard-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(12px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.wizard-overlay.active { display: flex; }
+.wizard {
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.wizard-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wizard-header h2 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: 1.5px;
+}
+.wizard-steps-indicator {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.wizard-step-dot {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.1);
+  transition: all var(--transition);
+}
+.wizard-step-dot.active {
+  background: var(--accent-574);
+  width: 48px;
+}
+.wizard-step-dot.done {
+  background: rgba(0,200,255,0.4);
+}
+.wizard-body {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}
+.wizard-step {
+  display: none;
+}
+.wizard-step.active {
+  display: block;
+  animation: fadeInUp 0.4s ease-out;
+}
+.wizard-step h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.wizard-step .step-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+.wizard-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.wizard-option {
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 2px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+.wizard-option:hover {
+  border-color: rgba(0,200,255,0.3);
+  background: rgba(0,200,255,0.04);
+}
+.wizard-option.selected {
+  border-color: var(--accent-574);
+  background: rgba(0,200,255,0.08);
+  box-shadow: 0 0 20px rgba(0,200,255,0.1);
+}
+.wizard-option .wo-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+.wizard-option .wo-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.wizard-option .wo-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.wizard-form-group {
+  margin-bottom: 20px;
+}
+.wizard-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+.wizard-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  transition: all var(--transition);
+}
+.wizard-input:focus {
+  outline: none;
+  border-color: var(--accent-574);
+  box-shadow: 0 0 0 3px rgba(0,200,255,0.1);
+}
+.wizard-input::placeholder { color: var(--text-muted); }
+.wizard-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.wizard-footer {
+  padding: 20px 32px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.wizard-footer .step-counter {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.wizard-footer-btns {
+  display: flex;
+  gap: 10px;
+}
+
+/* Summary step */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.summary-block {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+.summary-block h4 {
+  font-size: 12px;
+  color: var(--accent-574);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.summary-block p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.summary-block .val {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Success screen */
+.success-screen {
+  text-align: center;
+  padding: 40px 0;
+}
+.success-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: rgba(74,222,128,0.1);
+  border: 2px solid rgba(74,222,128,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  animation: successPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes successPop {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+.success-screen h3 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+.success-screen p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  margin-top: 80px;
+  padding: 40px 48px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-left {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 12px;
+  transition: color var(--transition);
+}
+.footer-links a:hover { color: var(--accent-574); }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .navbar { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 0 20px 60px; }
+  .hero-stats { display: none; }
+  .section-row { padding: 0 20px; }
+  .quick-builder { margin: 40px 20px; padding: 28px; }
+  .quick-builder-content { flex-direction: column; }
+  .quick-builder-steps { flex-wrap: wrap; }
+  .wizard-options { grid-template-columns: 1fr 1fr; }
+  .modal-grid { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .wizard-row { grid-template-columns: 1fr; }
+  .footer { flex-direction: column; gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     NAVBAR
+     ============================================ -->
+<nav class="navbar" id="navbar">
+  <a href="#" class="navbar-brand">
+    <div class="brand-logo">574</div>
+    <span class="brand-text">LAB EXPERIENCE</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Accueil</a></li>
+    <li><a href="#formats">Formats</a></li>
+    <li><a href="#espaces">Espaces</a></li>
+    <li><a href="#equipe">Équipe</a></li>
+    <li><a href="#demos">Démos</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-search">🔍</button>
+    <button class="nav-search nav-notif">🔔</button>
+    <div class="nav-avatar">ML</div>
+  </div>
+</nav>
+
+<!-- ============================================
+     HERO
+     ============================================ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+  <div class="hero-gradient"></div>
+  
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Espace d'innovation 574 — Centre-Ouest
+    </div>
+    <h1>CONCEVEZ VOTRE <br><span class="highlight">ÉVÉNEMENT</span><br>D'INNOVATION</h1>
+    <p class="hero-desc">
+      Explorez nos espaces, composez votre équipe d'experts, sélectionnez vos démos technologiques et obtenez un brief complet en quelques clics.
+    </p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="openWizard()">
+        <span class="btn-icon">🚀</span>
+        Créer un événement
+      </button>
+      <button class="btn btn-secondary" onclick="openModal('explore')">
+        <span class="btn-icon">◎</span>
+        Explorer l'espace 3D
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-number">120+</div>
+      <div class="hero-stat-label">Événements / an</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-number">8</div>
+      <div class="hero-stat-label">Espaces modulables</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-number">24</div>
+      <div class="hero-stat-label">Démos disponibles</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     FORMATS D'ÉVÉNEMENTS
+     ============================================ -->
+<div class="section-row" id="formats">
+  <div class="section-header">
+    <h2 class="section-title"><span class="bar"></span>FORMATS D'ÉVÉNEMENTS</h2>
+    <a href="#" class="section-see-all">Voir tout →</a>
+  </div>
+  <div class="scroll-row">
+    <div class="format-card" onclick="openModal('hackathon')">
+      <div class="format-card-visual">
+        <div class="fc-bg" style="background: linear-gradient(135deg, #1a0a2e, #2d1b69);">💻</div>
+        <div class="fc-overlay"></div>
+      </div>
+      <div class="format-card-body">
+        <div class="format-card-tag">Intensif</div>
+        <h3>Hackathon</h3>
+        <p>48h d'innovation intense. Prototypage rapide et pitch final devant un jury.</p>
+        <div class="format-card-meta">
+          <span>👥 20–80 pers.</span>
+          <span>⏱ 1–2 jours</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="format-card" onclick="openModal('workshop')">
+      <div class="format-card-visual">
+        <div class="fc-bg" style="background: linear-gradient(135deg, #0a1e2e, #0d4a6b);">🎯</div>
+        <div class="fc-overlay"></div>
+      </div>
+      <div class="format-card-body">
+        <div class="format-card-tag">Collaboratif</div>
+        <h3>Workshop Design</h3>
+        <p>Atelier de co-construction et d'idéation avec facilitateur dédié.</p>
+        <div class="format-card-meta">
+          <span>👥 8–25 pers.</span>
+          <span>⏱ ½–1 jour</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="format-card" onclick="openModal('seminaire')">
+      <div class="format-card-visual">
+        <div class="fc-bg" style="background: linear-gradient(135deg, #1e0a0a, #6b1d1d);">🎤</div>
+        <div class="fc-overlay"></div>
+      </div>
+      <div class="format-card-body">
+        <div class="format-card-tag">Plénière</div>
+        <h3>Séminaire Innovation</h3>
+        <p>Conférences, keynotes et tables rondes pour inspirer vos équipes.</p>
+        <div class="format-card-meta">
+          <span>👥 30–150 pers.</span>
+          <span>⏱ ½–1 jour</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="format-card" onclick="openModal('demo-day')">
+      <div class="format-card-visual">
+        <div class="fc-bg" style="background: linear-gradient(135deg, #0a2e1a, #1b6942);">🔬</div>
+        <div class="fc-overlay"></div>
+      </div>
+      <div class="format-card-body">
+        <div class="format-card-tag">Découverte</div>
+        <h3>Demo Day</h3>
+        <p>Parcours de démonstration des dernières innovations technologiques.</p>
+        <div class="format-card-meta">
+          <span>👥 10–60 pers.</span>
+          <span>⏱ 2–4 heures</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="format-card" onclick="openModal('sprint')">
+      <div class="format-card-visual">
+        <div class="fc-bg" style="background: linear-gradient(135deg, #2e1a0a, #694b1b);">⚡</div>
+        <div class="fc-overlay"></div>
+      </div>
+      <div class="format-card-body">
+        <div class="format-card-tag">Agile</div>
+        <h3>Sprint Design</h3>
+        <p>5 jours pour passer de l'idée au prototype testé par des utilisateurs.</p>
+        <div class="format-card-meta">
+          <span>👥 5–10 pers.</span>
+          <span>⏱ 5 jours</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="format-card" onclick="openModal('formation')">
+      <div class="format-card-visual">
+        <div class="fc-bg" style="background: linear-gradient(135deg, #1a0a2e, #5b1b69);">🧠</div>
+        <div class="fc-overlay"></div>
+      </div>
+      <div class="format-card-body">
+        <div class="format-card-tag">Formation</div>
+        <h3>Masterclass IA</h3>
+        <p>Sessions de formation immersives aux outils et usages de l'IA générative.</p>
+        <div class="format-card-meta">
+          <span>👥 10–30 pers.</span>
+          <span>⏱ ½ jour</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     ESPACES DISPONIBLES
+     ============================================ -->
+<div class="section-row" id="espaces">
+  <div class="section-header">
+    <h2 class="section-title"><span class="bar"></span>NOS ESPACES</h2>
+    <a href="#" class="section-see-all">Vue 3D immersive →</a>
+  </div>
+  <div class="scroll-row">
+    <div class="space-card" onclick="openModal('auditorium')">
+      <div class="space-card-img">
+        <div class="sc-bg" style="background: linear-gradient(135deg, #0d1b2a, #1b2838);">🏟️</div>
+        <div class="sc-overlay"></div>
+        <div class="space-card-avail available"><span class="dot-status"></span>Disponible</div>
+      </div>
+      <div class="space-card-body">
+        <h3>Auditorium Principal</h3>
+        <p class="space-card-desc">Espace plénière avec gradins, scène et régie son & lumière intégrée.</p>
+        <div class="space-card-features">
+          <span class="feat">150 places</span>
+          <span class="feat">Vidéo-proj 4K</span>
+          <span class="feat">Captation live</span>
+          <span class="feat">Micro HF</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-card" onclick="openModal('lab-ia')">
+      <div class="space-card-img">
+        <div class="sc-bg" style="background: linear-gradient(135deg, #0a1628, #162d50);">🤖</div>
+        <div class="sc-overlay"></div>
+        <div class="space-card-avail limited"><span class="dot-status"></span>Limité</div>
+      </div>
+      <div class="space-card-body">
+        <h3>Lab IA & Data</h3>
+        <p class="space-card-desc">Espace équipé pour démonstrations IA, postes GPU et écrans interactifs.</p>
+        <div class="space-card-features">
+          <span class="feat">20 places</span>
+          <span class="feat">GPU Stations</span>
+          <span class="feat">Écrans tactiles</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-card" onclick="openModal('open-space')">
+      <div class="space-card-img">
+        <div class="sc-bg" style="background: linear-gradient(135deg, #1a1a0a, #3d3d1b);">🪑</div>
+        <div class="sc-overlay"></div>
+        <div class="space-card-avail available"><span class="dot-status"></span>Disponible</div>
+      </div>
+      <div class="space-card-body">
+        <h3>Open Space Modulable</h3>
+        <p class="space-card-desc">Grande surface reconfigurable : ilots, U, cercle, format libre.</p>
+        <div class="space-card-features">
+          <span class="feat">80 places</span>
+          <span class="feat">Cloisons mobiles</span>
+          <span class="feat">Wi-Fi renforcé</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-card" onclick="openModal('showroom')">
+      <div class="space-card-img">
+        <div class="sc-bg" style="background: linear-gradient(135deg, #1b0a28, #3d1b60);">✨</div>
+        <div class="sc-overlay"></div>
+        <div class="space-card-avail available"><span class="dot-status"></span>Disponible</div>
+      </div>
+      <div class="space-card-body">
+        <h3>Showroom Démos</h3>
+        <p class="space-card-desc">Vitrine technologique permanente avec bornes interactives et VR.</p>
+        <div class="space-card-features">
+          <span class="feat">40 places</span>
+          <span class="feat">Bornes VR</span>
+          <span class="feat">Écran géant</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-card" onclick="openModal('cowork')">
+      <div class="space-card-img">
+        <div class="sc-bg" style="background: linear-gradient(135deg, #0a2818, #1b6030);">☕</div>
+        <div class="sc-overlay"></div>
+        <div class="space-card-avail available"><span class="dot-status"></span>Disponible</div>
+      </div>
+      <div class="space-card-body">
+        <h3>Espace Coworking</h3>
+        <p class="space-card-desc">Zone informelle de travail collaboratif et de créativité.</p>
+        <div class="space-card-features">
+          <span class="feat">30 places</span>
+          <span class="feat">Whiteboards</span>
+          <span class="feat">Café offert</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     ÉQUIPE & PROFILS
+     ============================================ -->
+<div class="section-row" id="equipe">
+  <div class="section-header">
+    <h2 class="section-title"><span class="bar"></span>COMPOSEZ VOTRE ÉQUIPE</h2>
+    <a href="#" class="section-see-all">Tous les profils →</a>
+  </div>
+  <div class="scroll-row">
+    <div class="people-card" onclick="openModal('person')">
+      <div class="people-avatar" style="background: linear-gradient(135deg, #00c8ff, #0066ff);">SL</div>
+      <h4>Sophie Laurent</h4>
+      <div class="role">Facilitatrice Design</div>
+      <div class="expertise">Design Thinking, Sprint, Lego Serious Play</div>
+      <div class="people-rating">★★★★★ <span style="color:var(--text-muted);">(42)</span></div>
+    </div>
+
+    <div class="people-card" onclick="openModal('person')">
+      <div class="people-avatar" style="background: linear-gradient(135deg, #e50914, #ff4444);">TM</div>
+      <h4>Thomas Martin</h4>
+      <div class="role">Expert IA</div>
+      <div class="expertise">LLM, Computer Vision, MLOps, GenAI</div>
+      <div class="people-rating">★★★★★ <span style="color:var(--text-muted);">(38)</span></div>
+    </div>
+
+    <div class="people-card" onclick="openModal('person')">
+      <div class="people-avatar" style="background: linear-gradient(135deg, #f5a623, #ff6600);">CB</div>
+      <h4>Claire Bertrand</h4>
+      <div class="role">Coach Agile</div>
+      <div class="expertise">Scrum, Kanban, SAFe, OKR</div>
+      <div class="people-rating">★★★★☆ <span style="color:var(--text-muted);">(27)</span></div>
+    </div>
+
+    <div class="people-card" onclick="openModal('person')">
+      <div class="people-avatar" style="background: linear-gradient(135deg, #4ade80, #059669);">AR</div>
+      <h4>Antoine Roux</h4>
+      <div class="role">Speaker Tech</div>
+      <div class="expertise">IoT, 5G, Edge Computing, Cybersécurité</div>
+      <div class="people-rating">★★★★★ <span style="color:var(--text-muted);">(51)</span></div>
+    </div>
+
+    <div class="people-card" onclick="openModal('person')">
+      <div class="people-avatar" style="background: linear-gradient(135deg, #a855f7, #7c3aed);">MD</div>
+      <h4>Marie Dupont</h4>
+      <div class="role">UX Designer</div>
+      <div class="expertise">Prototypage, Tests utilisateurs, Accessibilité</div>
+      <div class="people-rating">★★★★☆ <span style="color:var(--text-muted);">(33)</span></div>
+    </div>
+
+    <div class="people-card" onclick="openModal('person')">
+      <div class="people-avatar" style="background: linear-gradient(135deg, #06b6d4, #0284c7);">PG</div>
+      <h4>Pierre Garcia</h4>
+      <div class="role">Data Scientist</div>
+      <div class="expertise">Python, NLP, Dashboards, PowerBI</div>
+      <div class="people-rating">★★★★★ <span style="color:var(--text-muted);">(29)</span></div>
+    </div>
+
+    <div class="people-card" onclick="openModal('person')">
+      <div class="people-avatar" style="background: linear-gradient(135deg, #ec4899, #be185d);">LV</div>
+      <h4>Léa Vasseur</h4>
+      <div class="role">Facilitatrice Innovation</div>
+      <div class="expertise">Créativité, Pitch, Storytelling</div>
+      <div class="people-rating">★★★★★ <span style="color:var(--text-muted);">(45)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     DÉMOS TECHNOLOGIQUES
+     ============================================ -->
+<div class="section-row" id="demos">
+  <div class="section-header">
+    <h2 class="section-title"><span class="bar"></span>DÉMOS TECHNOLOGIQUES</h2>
+    <a href="#" class="section-see-all">Tout le catalogue →</a>
+  </div>
+  <div class="scroll-row">
+    <div class="demo-card" onclick="openModal('demo-genai')">
+      <div class="demo-card-visual">
+        <div class="dc-bg" style="background: linear-gradient(135deg, #1a0a2e, #3b1d8e);">🤖</div>
+        <div class="dc-overlay"></div>
+        <div class="demo-play-btn">▶</div>
+      </div>
+      <div class="demo-card-body">
+        <div class="demo-card-tag">IA Générative</div>
+        <h3>Atelier Claude / ChatGPT</h3>
+        <p>Découvrez la puissance des LLM en conditions réelles sur vos cas métier.</p>
+        <div class="demo-card-footer">
+          <div class="demo-duration">⏱ 45 min</div>
+          <span>⭐ 4.9</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-card" onclick="openModal('demo-vr')">
+      <div class="demo-card-visual">
+        <div class="dc-bg" style="background: linear-gradient(135deg, #0a2e1a, #1d8e3b);">🥽</div>
+        <div class="dc-overlay"></div>
+        <div class="demo-play-btn">▶</div>
+      </div>
+      <div class="demo-card-body">
+        <div class="demo-card-tag">Réalité Virtuelle</div>
+        <h3>Visite Virtuelle Gare</h3>
+        <p>Immersion VR dans la gare du futur : accessibilité, flux voyageurs, signalétique.</p>
+        <div class="demo-card-footer">
+          <div class="demo-duration">⏱ 30 min</div>
+          <span>⭐ 4.8</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-card" onclick="openModal('demo-iot')">
+      <div class="demo-card-visual">
+        <div class="dc-bg" style="background: linear-gradient(135deg, #2e1a0a, #8e5b1d);">📡</div>
+        <div class="dc-overlay"></div>
+        <div class="demo-play-btn">▶</div>
+      </div>
+      <div class="demo-card-body">
+        <div class="demo-card-tag">IoT</div>
+        <h3>Capteurs & Maintenance</h3>
+        <p>Réseau de capteurs connectés pour la maintenance prédictive du réseau ferré.</p>
+        <div class="demo-card-footer">
+          <div class="demo-duration">⏱ 40 min</div>
+          <span>⭐ 4.7</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-card" onclick="openModal('demo-cv')">
+      <div class="demo-card-visual">
+        <div class="dc-bg" style="background: linear-gradient(135deg, #0a1a2e, #1d3b8e);">👁️</div>
+        <div class="dc-overlay"></div>
+        <div class="demo-play-btn">▶</div>
+      </div>
+      <div class="demo-card-body">
+        <div class="demo-card-tag">Computer Vision</div>
+        <h3>Détection Anomalies Voie</h3>
+        <p>IA de vision par ordinateur pour l'inspection automatisée des infrastructures.</p>
+        <div class="demo-card-footer">
+          <div class="demo-duration">⏱ 35 min</div>
+          <span>⭐ 4.6</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-card" onclick="openModal('demo-data')">
+      <div class="demo-card-visual">
+        <div class="dc-bg" style="background: linear-gradient(135deg, #1a0a1e, #6b1d8e);">📊</div>
+        <div class="dc-overlay"></div>
+        <div class="demo-play-btn">▶</div>
+      </div>
+      <div class="demo-card-body">
+        <div class="demo-card-tag">Data Viz</div>
+        <h3>Dashboard Temps Réel</h3>
+        <p>Supervision en temps réel du trafic et des indicateurs de performance.</p>
+        <div class="demo-card-footer">
+          <div class="demo-duration">⏱ 25 min</div>
+          <span>⭐ 4.5</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     QUICK BUILDER CTA
+     ============================================ -->
+<div class="quick-builder">
+  <div class="quick-builder-content">
+    <div>
+      <h2>CONSTRUISEZ EN <span style="color:var(--accent-574);">4 ÉTAPES</span></h2>
+      <p>Notre assistant de création vous guide pas à pas pour construire l'événement parfait. Choisissez votre format, vos espaces, votre équipe et vos démos — recevez un brief complet en PDF.</p>
+      <div style="margin-top: 20px;">
+        <button class="btn btn-primary" onclick="openWizard()">
+          <span class="btn-icon">✨</span>
+          Lancer le configurateur
+        </button>
+      </div>
+    </div>
+    <div class="quick-builder-steps">
+      <div class="qb-step" onclick="openWizard()">
+        <div class="qb-step-num">1</div>
+        <div class="qb-step-label">Format</div>
+        <div class="qb-step-sub">Type d'événement</div>
+      </div>
+      <div class="qb-step" onclick="openWizard()">
+        <div class="qb-step-num">2</div>
+        <div class="qb-step-label">Espace</div>
+        <div class="qb-step-sub">Salle & config</div>
+      </div>
+      <div class="qb-step" onclick="openWizard()">
+        <div class="qb-step-num">3</div>
+        <div class="qb-step-label">Équipe</div>
+        <div class="qb-step-sub">Experts & facilit.</div>
+      </div>
+      <div class="qb-step" onclick="openWizard()">
+        <div class="qb-step-num">4</div>
+        <div class="qb-step-label">Démos</div>
+        <div class="qb-step-sub">Tech & innovation</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<footer class="footer">
+  <div class="footer-left">© 2026 574 Lab Experience — SNCF Centre-Ouest — Plateforme de réservation de l'espace d'innovation</div>
+  <div class="footer-links">
+    <a href="#">Back-office</a>
+    <a href="#">Documentation</a>
+    <a href="#">Contact équipe</a>
+    <a href="#">Aide</a>
+  </div>
+</footer>
+
+<!-- ============================================
+     DETAIL MODAL
+     ============================================ -->
+<div class="modal-overlay" id="detailModal" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hero" id="modalHero">
+      <div class="mh-overlay"></div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <h2 class="modal-title" id="modalTitle">Titre</h2>
+      <p class="modal-subtitle" id="modalSubtitle">Sous-titre</p>
+      <div class="modal-tags" id="modalTags"></div>
+      <p class="modal-desc" id="modalDesc">Description</p>
+      <div class="modal-grid" id="modalGrid"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="closeModalDirect(); openWizard();">
+          <span class="btn-icon">🚀</span>
+          Intégrer à mon événement
+        </button>
+        <button class="btn btn-secondary" onclick="closeModalDirect()">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     WIZARD MODAL
+     ============================================ -->
+<div class="wizard-overlay" id="wizardOverlay" onclick="closeWizard(event)">
+  <div class="wizard" onclick="event.stopPropagation()">
+    <div class="wizard-header">
+      <h2>🚀 CRÉER UN ÉVÉNEMENT</h2>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="wizard-steps-indicator" id="wizardIndicator">
+          <div class="wizard-step-dot active"></div>
+          <div class="wizard-step-dot"></div>
+          <div class="wizard-step-dot"></div>
+          <div class="wizard-step-dot"></div>
+          <div class="wizard-step-dot"></div>
+        </div>
+        <button class="modal-close" onclick="closeWizardDirect()" style="position:static;">✕</button>
+      </div>
+    </div>
+
+    <div class="wizard-body">
+      <!-- STEP 1: Format -->
+      <div class="wizard-step active" data-step="1">
+        <h3>Quel format d'événement ?</h3>
+        <p class="step-desc">Sélectionnez le type d'événement qui correspond à vos objectifs.</p>
+        <div class="wizard-options">
+          <div class="wizard-option" onclick="selectOption(this)">
+            <div class="wo-icon">💻</div>
+            <div class="wo-name">Hackathon</div>
+            <div class="wo-desc">Prototypage rapide & pitch</div>
+          </div>
+          <div class="wizard-option" onclick="selectOption(this)">
+            <div class="wo-icon">🎯</div>
+            <div class="wo-name">Workshop</div>
+            <div class="wo-desc">Co-construction & idéation</div>
+          </div>
+          <div class="wizard-option" onclick="selectOption(this)">
+            <div class="wo-icon">🎤</div>
+            <div class="wo-name">Séminaire</div>
+            <div class="wo-desc">Keynotes & tables rondes</div>
+          </div>
+          <div class="wizard-option" onclick="selectOption(this)">
+            <div class="wo-icon">🔬</div>
+            <div class="wo-name">Demo Day</div>
+            <div class="wo-desc">Parcours démonstrateurs</div>
+          </div>
+          <div class="wizard-option" onclick="selectOption(this)">
+            <div class="wo-icon">⚡</div>
+            <div class="wo-name">Sprint Design</div>
+            <div class="wo-desc">5j idée → prototype</div>
+          </div>
+          <div class="wizard-option" onclick="selectOption(this)">
+            <div class="wo-icon">🧠</div>
+            <div class="wo-name">Formation IA</div>
+            <div class="wo-desc">Masterclass & pratique</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Details -->
+      <div class="wizard-step" data-step="2">
+        <h3>Détails de l'événement</h3>
+        <p class="step-desc">Précisez les informations principales de votre événement.</p>
+        <div class="wizard-form-group">
+          <label>Nom de l'événement</label>
+          <input type="text" class="wizard-input" placeholder="Ex: Hackathon IA & Mobilité 2026">
+        </div>
+        <div class="wizard-row">
+          <div class="wizard-form-group">
+            <label>Date souhaitée</label>
+            <input type="date" class="wizard-input">
+          </div>
+          <div class="wizard-form-group">
+            <label>Durée</label>
+            <select class="wizard-input">
+              <option>½ journée (3-4h)</option>
+              <option selected>1 journée</option>
+              <option>2 jours</option>
+              <option>3–5 jours</option>
+            </select>
+          </div>
+        </div>
+        <div class="wizard-row">
+          <div class="wizard-form-group">
+            <label>Nombre de participants</label>
+            <input type="number" class="wizard-input" placeholder="Ex: 40" value="40">
+          </div>
+          <div class="wizard-form-group">
+            <label>Direction / entité</label>
+            <select class="wizard-input">
+              <option>574 Centre-Ouest</option>
+              <option>TER Bretagne</option>
+              <option>TER Pays-de-Loire</option>
+              <option>TER Centre-Val-de-Loire</option>
+              <option>SNCF Réseau</option>
+              <option>Autre</option>
+            </select>
+          </div>
+        </div>
+        <div class="wizard-form-group">
+          <label>Objectifs principaux</label>
+          <textarea class="wizard-input" rows="3" placeholder="Décrivez vos objectifs pour cet événement..."></textarea>
+        </div>
+      </div>
+
+      <!-- STEP 3: Espace -->
+      <div class="wizard-step" data-step="3">
+        <h3>Choisissez vos espaces</h3>
+        <p class="step-desc">Sélectionnez un ou plusieurs espaces pour votre événement.</p>
+        <div class="wizard-options" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="wizard-option" onclick="toggleOption(this)">
+            <div class="wo-icon">🏟️</div>
+            <div class="wo-name">Auditorium</div>
+            <div class="wo-desc">150 places • Plénière</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)">
+            <div class="wo-icon">🤖</div>
+            <div class="wo-name">Lab IA</div>
+            <div class="wo-desc">20 places • GPU & Écrans</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)">
+            <div class="wo-icon">🪑</div>
+            <div class="wo-name">Open Space</div>
+            <div class="wo-desc">80 places • Modulable</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)">
+            <div class="wo-icon">✨</div>
+            <div class="wo-name">Showroom</div>
+            <div class="wo-desc">40 places • Bornes VR</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)">
+            <div class="wo-icon">☕</div>
+            <div class="wo-name">Coworking</div>
+            <div class="wo-desc">30 places • Informel</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)">
+            <div class="wo-icon">🍽️</div>
+            <div class="wo-name">Espace Pause</div>
+            <div class="wo-desc">Café & networking</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: Équipe & Démos -->
+      <div class="wizard-step" data-step="4">
+        <h3>Équipe & Démos tech</h3>
+        <p class="step-desc">Composez votre équipe et ajoutez des démonstrations technologiques.</p>
+        <h4 style="font-size:14px;margin-bottom:12px;color:var(--accent-574);">👤 Profils recherchés</h4>
+        <div class="wizard-options" style="grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px;">
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">🎯</div>
+            <div class="wo-name" style="font-size:12px;">Facilitateur</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">🤖</div>
+            <div class="wo-name" style="font-size:12px;">Expert IA</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">🎤</div>
+            <div class="wo-name" style="font-size:12px;">Speaker</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">🎨</div>
+            <div class="wo-name" style="font-size:12px;">UX Designer</div>
+          </div>
+        </div>
+        <h4 style="font-size:14px;margin-bottom:12px;color:var(--accent-red-light);">🔬 Démos technologiques</h4>
+        <div class="wizard-options" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">🤖</div>
+            <div class="wo-name" style="font-size:12px;">IA Générative</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">🥽</div>
+            <div class="wo-name" style="font-size:12px;">Réalité Virtuelle</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">📡</div>
+            <div class="wo-name" style="font-size:12px;">IoT Capteurs</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">👁️</div>
+            <div class="wo-name" style="font-size:12px;">Computer Vision</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">📊</div>
+            <div class="wo-name" style="font-size:12px;">Dashboard Live</div>
+          </div>
+          <div class="wizard-option" onclick="toggleOption(this)" style="padding:14px;">
+            <div class="wo-icon" style="font-size:24px;">🔐</div>
+            <div class="wo-name" style="font-size:12px;">Cybersécurité</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5: Récapitulatif -->
+      <div class="wizard-step" data-step="5">
+        <h3>Récapitulatif de votre événement</h3>
+        <p class="step-desc">Vérifiez les informations avant de soumettre votre demande.</p>
+        <div class="summary-grid">
+          <div class="summary-block">
+            <h4>📋 Format</h4>
+            <p><span class="val">Workshop Design</span></p>
+            <p>Co-construction & idéation</p>
+          </div>
+          <div class="summary-block">
+            <h4>📅 Détails</h4>
+            <p><span class="val">15 mars 2026</span> — 1 journée</p>
+            <p>40 participants — 574 Centre-Ouest</p>
+          </div>
+          <div class="summary-block">
+            <h4>🏢 Espaces</h4>
+            <p><span class="val">Open Space Modulable</span></p>
+            <p>+ Espace Coworking (pause & networking)</p>
+          </div>
+          <div class="summary-block">
+            <h4>👥 Équipe</h4>
+            <p><span class="val">1 Facilitateur</span></p>
+            <p>1 Expert IA</p>
+          </div>
+          <div class="summary-block">
+            <h4>🔬 Démos</h4>
+            <p><span class="val">IA Générative</span></p>
+            <p>Dashboard Live</p>
+          </div>
+          <div class="summary-block">
+            <h4>💰 Budget estimé</h4>
+            <p><span class="val" style="color:var(--accent-gold);">2 500 – 4 000 €</span></p>
+            <p>Catering, intervenant, logistique</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUCCESS screen -->
+      <div class="wizard-step" data-step="6">
+        <div class="success-screen">
+          <div class="success-icon">✓</div>
+          <h3>DEMANDE ENVOYÉE !</h3>
+          <p>Votre brief a été transmis à l'équipe innovation.<br>Vous recevrez un récapitulatif PDF par email sous 24h.</p>
+          <div style="margin-top: 24px;">
+            <button class="btn btn-primary" onclick="closeWizardDirect()">
+              Retour à l'accueil
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wizard-footer" id="wizardFooter">
+      <div class="step-counter" id="stepCounter">Étape 1 sur 5</div>
+      <div class="wizard-footer-btns">
+        <button class="btn btn-secondary" id="wizardPrev" onclick="wizardNav(-1)" style="display:none;">← Précédent</button>
+        <button class="btn btn-primary" id="wizardNext" onclick="wizardNav(1)">Suivant →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<script>
+// Navbar scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ---------- DETAIL MODAL ----------
+const modalData = {
+  hackathon: {
+    emoji: '💻', bg: 'linear-gradient(135deg, #1a0a2e, #2d1b69)',
+    title: 'HACKATHON', subtitle: "48h d'innovation intense",
+    tags: ['Prototypage', 'Pitch', 'Jury', 'Prizes'],
+    desc: "Plongez vos équipes dans un marathon d'innovation de 48h. Les participants forment des équipes pluridisciplinaires, identifient un problème, prototypent une solution et pitchent devant un jury d'experts. Idéal pour générer des idées disruptives et identifier les talents.",
+    grid: [
+      {label: 'Participants', value: '20–80'},
+      {label: 'Durée', value: '1–2 jours'},
+      {label: 'Espaces req.', value: '2–3'}
+    ]
+  },
+  workshop: {
+    emoji: '🎯', bg: 'linear-gradient(135deg, #0a1e2e, #0d4a6b)',
+    title: 'WORKSHOP DESIGN', subtitle: 'Atelier collaboratif de co-construction',
+    tags: ['Design Thinking', 'Idéation', 'Facilitation', 'Post-its'],
+    desc: "Atelier structuré de co-construction animé par un facilitateur certifié. Méthodes de Design Thinking, brainstorming cadré, prototypage papier et restitution collective. Parfait pour résoudre un problème complexe en équipe.",
+    grid: [
+      {label: 'Participants', value: '8–25'},
+      {label: 'Durée', value: '½–1 jour'},
+      {label: 'Facilitateur', value: 'Requis'}
+    ]
+  },
+  seminaire: {
+    emoji: '🎤', bg: 'linear-gradient(135deg, #1e0a0a, #6b1d1d)',
+    title: 'SÉMINAIRE INNOVATION', subtitle: 'Conférences et tables rondes inspirantes',
+    tags: ['Keynote', 'Panel', 'Networking', 'Vision'],
+    desc: "Format plénière pour des conférences, keynotes inspirantes et tables rondes avec experts internes et externes. Idéal pour partager la vision innovation, présenter des retours d'expérience et stimuler l'intelligence collective.",
+    grid: [
+      {label: 'Participants', value: '30–150'},
+      {label: 'Durée', value: '½–1 jour'},
+      {label: 'Espace', value: 'Auditorium'}
+    ]
+  },
+  explore: {
+    emoji: '🌐', bg: 'linear-gradient(135deg, #0a1528, #152850)',
+    title: 'ESPACE 3D IMMERSIF', subtitle: "Explorez l'espace d'innovation en 3D",
+    tags: ['3D', 'Visite virtuelle', 'Configuration', 'Navigation'],
+    desc: "Naviguez dans une reconstitution 3D fidèle de l'espace 574. Visualisez les différentes zones, testez des configurations de salles, estimez les capacités et projetez-vous dans votre événement avant même de le réserver.",
+    grid: [
+      {label: 'Zones', value: '8'},
+      {label: 'Configs', value: '15+'},
+      {label: 'Vue 360°', value: 'Oui'}
+    ]
+  },
+  'demo-day': {
+    emoji: '🔬', bg: 'linear-gradient(135deg, #0a2e1a, #1b6942)',
+    title: 'DEMO DAY', subtitle: 'Parcours de démonstration technologique',
+    tags: ['Démonstrateurs', 'Innovation', 'Hands-on', 'Showcase'],
+    desc: "Organisez un parcours de découverte de nos innovations technologiques. Chaque station propose une démo interactive animée par un expert. Format idéal pour accueillir des partenaires, des CODIR ou des visiteurs.",
+    grid: [
+      {label: 'Participants', value: '10–60'},
+      {label: 'Durée', value: '2–4h'},
+      {label: 'Démos', value: '4–8'}
+    ]
+  },
+  sprint: {
+    emoji: '⚡', bg: 'linear-gradient(135deg, #2e1a0a, #694b1b)',
+    title: 'SPRINT DESIGN', subtitle: "De l'idée au prototype en 5 jours",
+    tags: ['Sprint', 'Prototype', 'Test users', 'Jake Knapp'],
+    desc: "Méthode éprouvée en 5 jours : comprendre, diverger, décider, prototyper, tester. Un facilitateur guide une équipe restreinte pour passer d'un challenge business à un prototype testé par de vrais utilisateurs.",
+    grid: [
+      {label: 'Participants', value: '5–10'},
+      {label: 'Durée', value: '5 jours'},
+      {label: 'Livrables', value: 'Prototype + tests'}
+    ]
+  },
+  formation: {
+    emoji: '🧠', bg: 'linear-gradient(135deg, #1a0a2e, #5b1b69)',
+    title: 'MASTERCLASS IA', subtitle: "Formation immersive à l'IA générative",
+    tags: ['LLM', 'Prompt Engineering', 'Hands-on', 'Use cases'],
+    desc: "Sessions de formation pratique aux outils d'IA générative. De la découverte des modèles à l'application concrète sur vos cas métier. Animées par nos experts IA avec postes équipés et accès aux plateformes.",
+    grid: [
+      {label: 'Participants', value: '10–30'},
+      {label: 'Durée', value: '½ jour'},
+      {label: 'Niveau', value: 'Tous niveaux'}
+    ]
+  },
+  auditorium: {
+    emoji: '🏟️', bg: 'linear-gradient(135deg, #0d1b2a, #1b2838)',
+    title: 'AUDITORIUM PRINCIPAL', subtitle: 'Espace plénière 150 places',
+    tags: ['Gradins', 'Scène', 'Régie', 'Captation'],
+    desc: "Notre auditorium principal offre 150 places assises en gradins avec une scène équipée. Régie son & lumière intégrée, vidéo-projection 4K, système de captation live pour diffusion à distance. Idéal pour séminaires et keynotes.",
+    grid: [
+      {label: 'Capacité', value: '150'},
+      {label: 'Surface', value: '220 m²'},
+      {label: 'Équipement', value: 'Full AV'}
+    ]
+  },
+  'lab-ia': {
+    emoji: '🤖', bg: 'linear-gradient(135deg, #0a1628, #162d50)',
+    title: 'LAB IA & DATA', subtitle: 'Espace dédié IA et expérimentation',
+    tags: ['GPU', 'Écrans tactiles', 'Postes équipés', 'API'],
+    desc: "Espace technique équipé de stations GPU, écrans interactifs et accès aux plateformes IA. Parfait pour les workshops hands-on, les hackathons IA et les formations pratiques nécessitant de la puissance de calcul.",
+    grid: [
+      {label: 'Capacité', value: '20'},
+      {label: 'GPU', value: '10 stations'},
+      {label: 'Écrans', value: '4 tactiles'}
+    ]
+  },
+  person: {
+    emoji: '👤', bg: 'linear-gradient(135deg, #0a1e2e, #1b4060)',
+    title: 'FICHE PROFIL', subtitle: 'Expert disponible pour vos événements',
+    tags: ['Facilitateur', 'Certified', 'Design Thinking', 'Innovation'],
+    desc: "Nos experts sont certifiés et disponibles pour animer vos événements. Consultez leurs spécialités, leur planning et les retours des précédents événements. Glissez-déposez les profils dans votre configuration.",
+    grid: [
+      {label: 'Évaluations', value: '★★★★★'},
+      {label: 'Événements', value: '42'},
+      {label: 'Dispo', value: 'Consulter'}
+    ]
+  },
+  'demo-genai': {
+    emoji: '🤖', bg: 'linear-gradient(135deg, #1a0a2e, #3b1d8e)',
+    title: 'ATELIER IA GÉNÉRATIVE', subtitle: 'Claude, ChatGPT & Co en action',
+    tags: ['LLM', 'Prompt engineering', 'Use cases', 'Live coding'],
+    desc: "Démonstration interactive des capacités de l'IA générative appliquée à vos cas d'usage. Exploration de Claude, ChatGPT, et des outils de génération d'images et de code. Chaque participant manipule les outils en conditions réelles.",
+    grid: [
+      {label: 'Durée', value: '45 min'},
+      {label: 'Setup', value: 'Postes GPU'},
+      {label: 'Note', value: '⭐ 4.9'}
+    ]
+  },
+  'demo-vr': {
+    emoji: '🥽', bg: 'linear-gradient(135deg, #0a2e1a, #1d8e3b)',
+    title: 'VISITE VIRTUELLE GARE', subtitle: 'Immersion dans la gare du futur',
+    tags: ['VR', 'Meta Quest', 'Accessibilité', 'Flux voyageurs'],
+    desc: "Enfilez un casque VR et plongez dans la gare de demain. Visualisez les flux voyageurs, testez la signalétique, évaluez l'accessibilité. Un outil puissant pour les études d'aménagement et la projection des équipes.",
+    grid: [
+      {label: 'Durée', value: '30 min'},
+      {label: 'Casques', value: '6 Meta Quest'},
+      {label: 'Note', value: '⭐ 4.8'}
+    ]
+  },
+  'demo-iot': {
+    emoji: '📡', bg: 'linear-gradient(135deg, #2e1a0a, #8e5b1d)',
+    title: 'CAPTEURS & MAINTENANCE', subtitle: 'IoT pour le réseau ferré',
+    tags: ['IoT', 'Capteurs', 'Prédictif', 'Temps réel'],
+    desc: "Découvrez notre réseau de capteurs connectés déployés sur les infrastructures ferroviaires. Dashboard temps réel, alertes intelligentes et maintenance prédictive. Une démo qui montre l'impact concret de l'IoT.",
+    grid: [
+      {label: 'Durée', value: '40 min'},
+      {label: 'Capteurs', value: '12 types'},
+      {label: 'Note', value: '⭐ 4.7'}
+    ]
+  },
+  'demo-cv': {
+    emoji: '👁️', bg: 'linear-gradient(135deg, #0a1a2e, #1d3b8e)',
+    title: 'DÉTECTION ANOMALIES', subtitle: 'Computer Vision sur les voies',
+    tags: ['Vision', 'Deep Learning', 'Infrastructure', 'Sécurité'],
+    desc: "IA de vision par ordinateur pour l'inspection automatisée des voies et des infrastructures. Détection de fissures, d'usure et d'anomalies en temps réel depuis les caméras embarquées dans les trains.",
+    grid: [
+      {label: 'Durée', value: '35 min'},
+      {label: 'Précision', value: '97.3%'},
+      {label: 'Note', value: '⭐ 4.6'}
+    ]
+  },
+  'demo-data': {
+    emoji: '📊', bg: 'linear-gradient(135deg, #1a0a1e, #6b1d8e)',
+    title: 'DASHBOARD TEMPS RÉEL', subtitle: 'Supervision du trafic ferroviaire',
+    tags: ['Data Viz', 'PowerBI', 'KPI', 'Monitoring'],
+    desc: "Supervision en temps réel du trafic ferroviaire avec indicateurs de performance dynamiques. Cartographie des flux, alertes et analyses prédictives sur des écrans grand format interactifs.",
+    grid: [
+      {label: 'Durée', value: '25 min'},
+      {label: 'Sources', value: '8 flux live'},
+      {label: 'Note', value: '⭐ 4.5'}
+    ]
+  }
+};
+
+function openModal(key) {
+  const d = modalData[key] || modalData['hackathon'];
+  const modal = document.getElementById('detailModal');
+  document.getElementById('modalHero').style.background = d.bg;
+  document.getElementById('modalHero').innerHTML = `<div class="mh-overlay"></div><button class="modal-close" onclick="closeModalDirect()">✕</button><span style="position:relative;z-index:1;">${d.emoji}</span>`;
+  document.getElementById('modalTitle').textContent = d.title;
+  document.getElementById('modalSubtitle').textContent = d.subtitle;
+  document.getElementById('modalTags').innerHTML = d.tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+  document.getElementById('modalDesc').textContent = d.desc;
+  document.getElementById('modalGrid').innerHTML = d.grid.map(g => `
+    <div class="modal-info-box">
+      <div class="label">${g.label}</div>
+      <div class="value">${g.value}</div>
+    </div>
+  `).join('');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === e.currentTarget) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('detailModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// ---------- WIZARD ----------
+let currentStep = 1;
+const totalSteps = 5;
+
+function openWizard() {
+  currentStep = 1;
+  updateWizard();
+  document.getElementById('wizardOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeWizard(e) {
+  if (e.target === e.currentTarget) closeWizardDirect();
+}
+function closeWizardDirect() {
+  document.getElementById('wizardOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+  // Reset selections
+  document.querySelectorAll('.wizard-option.selected').forEach(o => o.classList.remove('selected'));
+  currentStep = 1;
+  updateWizard();
+}
+
+function wizardNav(dir) {
+  currentStep += dir;
+  if (currentStep < 1) currentStep = 1;
+  if (currentStep > totalSteps + 1) currentStep = totalSteps + 1;
+  updateWizard();
+}
+
+function updateWizard() {
+  // Show active step
+  document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+  const activeStep = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+  if (activeStep) activeStep.classList.add('active');
+
+  // Update indicator
+  const dots = document.querySelectorAll('.wizard-step-dot');
+  dots.forEach((dot, i) => {
+    dot.classList.remove('active', 'done');
+    if (i + 1 === currentStep) dot.classList.add('active');
+    else if (i + 1 < currentStep) dot.classList.add('done');
+  });
+
+  // Buttons
+  const prev = document.getElementById('wizardPrev');
+  const next = document.getElementById('wizardNext');
+  const footer = document.getElementById('wizardFooter');
+  const counter = document.getElementById('stepCounter');
+  
+  if (currentStep > totalSteps) {
+    // Success screen
+    footer.style.display = 'none';
+  } else {
+    footer.style.display = 'flex';
+    prev.style.display = currentStep > 1 ? 'inline-flex' : 'none';
+    counter.textContent = `Étape ${currentStep} sur ${totalSteps}`;
+    
+    if (currentStep === totalSteps) {
+      next.innerHTML = '✓ Envoyer la demande';
+      next.onclick = () => wizardNav(1);
+    } else {
+      next.innerHTML = 'Suivant →';
+      next.onclick = () => wizardNav(1);
+    }
+  }
+}
+
+function selectOption(el) {
+  el.parentElement.querySelectorAll('.wizard-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function toggleOption(el) {
+  el.classList.toggle('selected');
+}
+
+// Smooth scroll for nav links
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href.startsWith('#') && href.length > 1) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModalDirect();
+    closeWizardDirect();
+  }
+});
+</script>
+
+</body>
+</html>
